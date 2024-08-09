@@ -1,0 +1,71 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import keras
+import tensorflow as tf
+from keras import optimizers, regularizers
+from keras.models import Sequential, Model
+from keras.layers import Dense, Flatten, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.applications import Xception
+from keras.preprocessing import image
+from keras.preprocessing.image import ImageDataGenerator
+from keras.applications.xception import preprocess_input
+
+# Data Directories
+train_dir = 'path_to_train_data'
+validation_dir = 'path_to_validation_data'
+
+# Image Data Generators
+train_datagen = ImageDataGenerator(
+    preprocessing_function=preprocess_input,
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
+
+validation_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
+
+train_generator = train_datagen.flow_from_directory(
+    train_dir,
+    target_size=(299, 299),
+    batch_size=32,
+    class_mode='categorical'
+)
+
+validation_generator = validation_datagen.flow_from_directory(
+    validation_dir,
+    target_size=(299, 299),
+    batch_size=32,
+    class_mode='categorical'
+)
+
+# Build Xception Model
+base_model = Xception(weights='imagenet', include_top=False, input_shape=(299, 299, 3))
+
+for layer in base_model.layers:
+    layer.trainable = False
+
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(1024, activation='relu')(x)
+x = Dropout(0.5)(x)
+predictions = Dense(train_generator.num_classes, activation='softmax')(x)
+
+model = Model(inputs=base_model.input, outputs=predictions)
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Train the Model
+history = model.fit(
+    train_generator,
+    epochs=25,
+    validation_data=validation_generator
+)
+
+# Save the trained model
+trained_model = model
+model.save("xception_model.h5", include_optimizer=True)
