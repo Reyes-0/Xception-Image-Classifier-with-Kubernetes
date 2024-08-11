@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,3 +13,31 @@
     </p>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing Webpage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload an Image for Processing</h1>
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput" accept="image/*" required>
+            <input type="submit" value="Upload Image">
+        </form>
+
+        <div id="loading" class="hidden">Processing image, please wait...</div>
+        <div id="result" class="hidden">
+            <h2>Processed Image:</h2>
+            <img id="outputImage" src="" alt="Processed Image">
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
+>>>>>>> d38a459604f85f66bc8038dc2656acdb89c737b4
