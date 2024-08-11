@@ -4,12 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Processing Webpage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Upload an Image for Processing</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*">
-        <input type="submit" value="Upload Image">
-    </form>
+    <div class="container">
+        <h1>Upload an Image for Processing</h1>
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput" accept="image/*" required>
+            <input type="submit" value="Upload Image">
+        </form>
+
+        <div id="loading" class="hidden">Processing image, please wait...</div>
+        <div id="result" class="hidden">
+            <h2>Processed Image:</h2>
+            <img id="outputImage" src="" alt="Processed Image">
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = function() {
+            document.getElementById('loading').classList.remove('hidden');
+        };
+
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const request = new XMLHttpRequest();
+            request.open('POST', this.action, true);
+            request.responseType = 'blob';
+
+            request.onload = function() {
+                if (this.status === 200) {
+                    const blob = this.response;
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('outputImage').src = url;
+                    document.getElementById('result').classList.remove('hidden');
+                    document.getElementById('loading').classList.add('hidden');
+                } else {
+                    alert('An error occurred while processing the image.');
+                    document.getElementById('loading').classList.add('hidden');
+                }
+            };
+
+            request.send(formData);
+        });
+    </script>
 </body>
 </html>
