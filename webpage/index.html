@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Welcome Page</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <script src="script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing Webpage</title>
 </head>
 <body>
-    <h1>For u to cook JONATHAN!</h1>
-    <p>IDK how ur part need to be coded yet so u can start ahead and when u can't do we all just come look cuz ur part legit don't have a sample code apart from the
-        cv code.
-    </p>
+    <h1>Upload an Image for Processing</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*">
+        <input type="submit" value="Upload Image">
+    </form>
 </body>
 </html>
