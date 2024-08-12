@@ -1,0 +1,17 @@
+#specify your base image to be python3.8
+FROM python:3.8
+
+# set working directory to be /usr/src/app
+WORKDIR /usr/src/app
+
+# copy all the files to the container
+COPY . /usr/src/app
+
+# install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# expose flask app on port 5000
+EXPOSE 5000
+
+# run the command
+CMD ["python", "./model_inference.py"]
