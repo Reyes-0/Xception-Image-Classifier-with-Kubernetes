@@ -1,54 +1,102 @@
-import numpy as np
 import keras
-import matplotlib.pyplot as plt
-# import PTL.Image as Image 
 import os
 import cv2
-from keras.preprocessing.image import ImageDataGenerator
+import numpy as np
+import tensorflow as tf
+import PIL.Image as Image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from parameters import *
 
-class DataProcessing:
-    def __init__(self):
-        pass
-    
-    def process_image(self):
-        # raw_train_path = raw_train_path
-        # image = cv2.imread(self.path)
-        # define the data augmentation parameters
-        train_datagen = self.ImageDataGenerator(rescale = rescale,
-                                   rotation_range = rotation_range,
-                                   width_shift_range = width_shift_range,
-                                   height_shift_range = height_shift_range,
-                                   shear_range = shear_range)
+if not os.path.exists(pv_directory):
+    os.makedirs(pv_directory)
 
-        train_generator = train_datagen.flow_from_directory(raw_train_path,
-                                                    class_mode='categorical',
-                                                    target_size = target_size,
-                                                    shuffle = shuffle,
-                                                    batch_size = batch_size)
+train_datagen = ImageDataGenerator(rescale = rescale,
+                            rotation_range = rotation_range,
+                            width_shift_range = width_shift_range,
+                            height_shift_range = height_shift_range,
+                            shear_range = shear_range)
+
+train_generator = train_datagen.flow_from_directory(raw_train_path,
+                                            class_mode='categorical',
+                                            target_size = target_size,
+                                            shuffle = shuffle,
+                                            batch_size = batch_size,
+                                            color_mode = color_mode)
+
+test_datagen = ImageDataGenerator(rescale = rescale)
+# raw_test_path = raw_test_path
+validation_generator = test_datagen.flow_from_directory(
+        raw_test_path,
+        class_mode='categorical',
+        target_size = target_size,
+        batch_size = batch_size,
+        shuffle = shuffle,
+        color_mode = color_mode)
+
+validation_generator.class_indices
+
+# Save the train generator to the PVC
+images_list = []
+labels_list = []
+
+for _ in range(train_generator.samples // train_generator.batch_size):
+    images, labels = next(train_generator)
+    images_list.append(images)
+    labels_list.append(labels)
+
+images_array = np.concatenate(images_list, axis=0)
+labels_array = np.concatenate(labels_list, axis=0)
+
+# Save the validation generator to the PVC
+val_images_list = []
+val_labels_list = []
+
+for _ in range(validation_generator.samples // validation_generator.batch_size):
+    val_images, val_labels = next(validation_generator)
+    val_images_list.append(val_images)
+    val_labels_list.append(val_labels)
+
+val_images_array = np.concatenate(val_images_list, axis=0)
+val_labels_array = np.concatenate(val_labels_list, axis=0)
+
+np.save(os.path.join(pv_directory, 'train_images.npy'), images_array)
+np.save(os.path.join(pv_directory, 'train_labels.npy'), labels_array)
+np.save(os.path.join(pv_directory, 'val_images.npy'), val_images_array)
+np.save(os.path.join(pv_directory, 'val_labels.npy'), val_labels_array)
+
+
+validation_labels = np.load(os.path.join(pv_directory, 'val_labels.npy'))
+first_value = validation_labels[12]
+print("First value:", first_value)
+
+
+image_path = '/content/download ().jpeg'
+# image_path = uploaded_image_path
+
+if not os.path.exists(image_path):
+    print(f"Error: Image file '{image_path}' does not exist")
+else:
+    try:
+        img = cv2.imread(image_path)
+
+        if len(img.shape) == 2:  # Grayscale image
+            raise ValueError("Image is Grayscale")
+        elif len(img.shape) == 3:  # RGB image
+            if img.shape[2] == 3:  # Check if it has 3 color channels
+                pass
+            else:
+                raise ValueError("Image has an unknown number of color channels")
+        else:
+            raise ValueError("Image has an unknown shape")
         
-        test_datagen = ImageDataGenerator(rescale = rescale)   
-        # raw_test_path = raw_test_path
-        validation_generator = test_datagen.flow_from_directory(
-                raw_test_path,
-                class_mode='categorical',
-                target_size = target_size,
-                batch_size = batch_size,
-                shuffle = shuffle)
-        return train_generator, validation_generator
-        
-    def inference_process_image(self):
-        # uploaded_image_path = uploaded_image_path
-        test_datagen = self.ImageDataGenerator(rescale = rescale)
-        inference_generator = test_datagen.flow_from_directory(
-                uploaded_image_path,
-                class_mode='categorical')
-        
-        return inference_generator
+        resized_img = cv2.resize(img, (71, 71))
+        pv_directory = 'data/processed_uploaded_image'
+        if not os.path.exists(pv_directory):
+            os.makedirs(pv_directory)
+
+        filename = 'resized__uploaded_image.npy'
+        np.save(os.path.join(pv_directory, filename), resized_img)
+        print('Image saved successfully')
     
-if __name__ == '__main__':
-    
-    DP = DataProcessing()
-    train_data, validate_data = DP.process_image()
-    processed_uploaded_image = DP.inference_process_image()
-    dp.process_image()
+    except ValueError as e:
+        print(f"Error: {e}")

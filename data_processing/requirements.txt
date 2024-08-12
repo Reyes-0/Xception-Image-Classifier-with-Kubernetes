@@ -1,6 +1,6 @@
-numpy
-matplotlib
+tensorflow==2.13.1
+keras==2.13.1
+numpy==1.22
+opencv-python
 pillow
-opencv-python-headless
-flask
-requests
+scipy
