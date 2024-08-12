@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
   - name: dataInference
-    image: nigelpoulton/k8sbook:1.0
+    image: shaun/data_inference:v1
     ports:
     - containerPort: 8080
     resources:

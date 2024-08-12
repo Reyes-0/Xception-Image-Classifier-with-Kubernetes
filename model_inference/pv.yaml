@@ -1,26 +1,36 @@
-kind: PersistentVolume
+# Namespace Definition
 apiVersion: v1
+kind: Namespace
 metadata:
-  name: research-vol
-  labels:
-    type: local
+  name: my-application-namespace
+
+---
+
+# Persistent Volume (PV) Definition
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: model-pv
+  namespace: my-application-namespace
 spec:
   capacity:
-    storage: 2Gi
+    storage: 1Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
-    path: "/data/research-vol"
+    path: "/mnt/models"
+
 ---
-kind: PersistentVolumeClaim
+
+# Persistent Volume Claim (PVC) Definition
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: research-pvc
+  name: model-pvc
+  namespace: my-application-namespace
 spec:
   accessModes:
-    - ReadWriteOnce
-  storageClassName: ""
-  volumeName: research-vol
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
