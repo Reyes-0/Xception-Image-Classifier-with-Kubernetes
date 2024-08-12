@@ -4,7 +4,12 @@ metadata:
   name: model-training-deployment
   namespace: my-application-namespace  # Ensure other pods use this
 spec:
-  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: 2
   selector:
     matchLabels:
       app: model-training
