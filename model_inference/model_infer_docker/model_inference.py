@@ -7,6 +7,7 @@ import os
 import numpy as np
 from tensorflow.keras.models import load_model
 import cv2
+import PIL.Image as Image
 from parameters import model_save_dir, prediction_save_dir
 
 # Load the saved model
@@ -17,11 +18,20 @@ model = load_model(model_path)
 class_names = {0: 'airplane', 1: 'automobile', 2: 'ship', 3: 'truck'}
 
 # Load the resized image
-image_path = os.path.join('data/processed_uploaded_image', 'resized__uploaded_image.npy')
-resized_img = np.load(image_path)
+# image_path = os.path.join('data/processed_uploaded_image', 'resized__uploaded_image.npy')
+# img = Image.open('/content/ship.jpg').resize((71,71))
+# img_array = np.array(img)/255.0
+# img_array = img_array.reshape((1, 71, 71, 3))
+# resized_img = np.load(image_path)
+
+# Load the image
+image_file_path = "C:/Users/Shaun Wee/EGT309 Proj/k8s_CV/model_inference/model_infer_docker/ship.jpg"
+img = Image.open(image_file_path).resize((71, 71))
+img_array = np.array(img) / 255.0
+img_array = img_array.reshape((1, 71, 71, 3))
 
 # Make predictions
-predictions = model.predict(resized_img)
+predictions = model.predict(img_array)
 
 # Get the predicted class index
 predicted_class_index = np.argmax(predictions)
