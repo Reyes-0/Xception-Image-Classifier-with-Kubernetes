@@ -1,15 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: model-training-deployment
-  namespace: sleeper-build-namespace  # Ensure other pods use this
+  name: model-training-deployment  
 spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
       maxSurge: 1
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: model-training
@@ -20,16 +19,13 @@ spec:
     spec:
       containers:
       - name: model-training
-        image: markjesh/model_training_image:latest
+        image: markjesh/model-training-image:latest
         volumeMounts:
-        - mountPath: /app
-          name: data-processing-pv
-        env:
-        - name: TRAIN_DIR
-          value: "/app/preprocessed/data/processed_data"  # Updated to reflect where the preprocessed data is located
-        - name: VALIDATION_DIR
-          value: "/app/preprocessed/data/processed_data"  # Updated to reflect where the preprocessed data is located
+        - mountPath: "/mnt"
+          name: shared-pv
+        # - mountPath: "/app/models"
+        #   name: model-storage
       volumes:
-      - name: data-processing-pv
+      - name: shared-pv
         persistentVolumeClaim:
-          claimName: data-processing-pvc
+          claimName: shared-pvc

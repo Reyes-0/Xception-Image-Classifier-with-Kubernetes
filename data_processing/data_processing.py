@@ -80,35 +80,3 @@ np.save(os.path.join(processed_test_path, 'val_labels.npy'), val_labels_array)
 validation_labels = np.load(os.path.join(processed_test_path, 'val_labels.npy'))
 first_value = validation_labels[12]
 print("First value:", first_value)
-
-
-image_path = '/content/download ().jpeg'
-# image_path = uploaded_image_path
-
-if not os.path.exists(image_path):
-    print(f"Error: Image file '{image_path}' does not exist")
-else:
-    try:
-        img = cv2.imread(image_path)
-
-        if len(img.shape) == 2:  # Grayscale image
-            raise ValueError("Image is Grayscale")
-        elif len(img.shape) == 3:  # RGB image
-            if img.shape[2] == 3:  # Check if it has 3 color channels
-                pass
-            else:
-                raise ValueError("Image has an unknown number of color channels")
-        else:
-            raise ValueError("Image has an unknown shape")
-        
-        resized_img = cv2.resize(img, (71, 71))
-        pv_directory = 'data/processed_uploaded_image'
-        if not os.path.exists(pv_directory):
-            os.makedirs(pv_directory)
-
-        filename = 'resized__uploaded_image.npy'
-        np.save(os.path.join(pv_directory, filename), resized_img)
-        print('Image saved successfully')
-    
-    except ValueError as e:
-        print(f"Error: {e}")
