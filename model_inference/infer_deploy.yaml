@@ -26,6 +26,7 @@ spec:
           name: model-storage
         - mountPath: "/app/preprocessed"  # Mount for the preprocessing PVC
           name: preprocessing-storage     # Name referencing the preprocessing PVC
+      - containerPort: 5000
       volumes:
       - name: model-storage
         persistentVolumeClaim:
