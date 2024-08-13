@@ -7,6 +7,12 @@ import PIL.Image as Image
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from parameters import *
 
+# Create directories if they don't exist
+# if not os.path.exists(raw_train_path):
+#     os.makedirs(raw_train_path)
+# if not os.path.exists(raw_test_path):
+#     os.makedirs(raw_test_path)
+
 if not os.path.exists(pv_directory):
     os.makedirs(pv_directory)
 
@@ -59,13 +65,19 @@ for _ in range(validation_generator.samples // validation_generator.batch_size):
 val_images_array = np.concatenate(val_images_list, axis=0)
 val_labels_array = np.concatenate(val_labels_list, axis=0)
 
-np.save(os.path.join(pv_directory, 'train_images.npy'), images_array)
-np.save(os.path.join(pv_directory, 'train_labels.npy'), labels_array)
-np.save(os.path.join(pv_directory, 'val_images.npy'), val_images_array)
-np.save(os.path.join(pv_directory, 'val_labels.npy'), val_labels_array)
+if not os.path.exists(processed_train_path):
+    os.makedirs(processed_train_path)
+if not os.path.exists(processed_test_path):
+    os.makedirs(processed_test_path)
 
+np.save(os.path.join(processed_train_path, 'train_images.npy'), images_array)
+np.save(os.path.join(processed_train_path, 'train_labels.npy'), labels_array)
 
-validation_labels = np.load(os.path.join(pv_directory, 'val_labels.npy'))
+np.save(os.path.join(processed_test_path, 'val_images.npy'), val_images_array)
+np.save(os.path.join(processed_test_path, 'val_labels.npy'), val_labels_array)
+
+# Load processed data from PV
+validation_labels = np.load(os.path.join(processed_test_path, 'val_labels.npy'))
 first_value = validation_labels[12]
 print("First value:", first_value)
 
