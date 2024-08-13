@@ -2,14 +2,14 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: data-processing-pv
-  # namespace: sleeper-build-namespace
+  namespace: sleeper-build-namespace
 spec:
   capacity:
     storage: 20Gi
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/mnt/c/School/Year3 Sem1/AI Solution Dev"
+    path: "/app"
 
 ---
 
@@ -17,10 +17,17 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: data-processing-pvc
-  # namespace: sleeper-build-namespace
+  namespace: sleeper-build-namespace
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 10Gi
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sleeper-build-namespace
