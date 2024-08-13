@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: model-training-deployment
-  namespace: my-application-namespace  # Ensure other pods use this
+  namespace: sleeper-build-namespace  # Ensure other pods use this
 spec:
   strategy:
     type: RollingUpdate
@@ -22,14 +22,14 @@ spec:
       - name: model-training
         image: markjesh/model_training_image:latest
         volumeMounts:
-        - mountPath: "/app/saved_model"
-          name: model-storage
+        - mountPath: /app
+          name: data-processing-pv
         env:
         - name: TRAIN_DIR
           value: "/app/preprocessed/data/processed_data"  # Updated to reflect where the preprocessed data is located
         - name: VALIDATION_DIR
           value: "/app/preprocessed/data/processed_data"  # Updated to reflect where the preprocessed data is located
       volumes:
-      - name: model-storage
+      - name: data-processing-pv
         persistentVolumeClaim:
-          claimName: model-pvc
+          claimName: data-processing-pvc
