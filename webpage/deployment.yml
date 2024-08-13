@@ -14,6 +14,18 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: 224535G/flask-image-processing:latest
+        image: 224535gs/newerindex:latest
         ports:
         - containerPort: 5000
+        volumeMounts:
+        - name: image-storage
+          mountPath: "/app/images"  # Mount the PVC for uploaded images
+        - name: processed-storage
+          mountPath: "/app/processed"  # Mount the PVC for processed images
+      volumes:
+      - name: image-storage
+        persistentVolumeClaim:
+          claimName: image-pvc  # PVC name for uploaded images
+      - name: processed-storage
+        persistentVolumeClaim:
+          claimName: processed-pvc  # PVC name for processed images
