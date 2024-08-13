@@ -24,8 +24,6 @@ spec:
         volumeMounts:
         - mountPath: "/app/saved_model"
           name: model-storage
-        - mountPath: "/app/preprocessed"  # Mount for the preprocessing PVC
-          name: preprocessing-storage     # Name referencing the preprocessing PVC
         env:
         - name: TRAIN_DIR
           value: "/app/preprocessed/data/processed_data"  # Updated to reflect where the preprocessed data is located
@@ -35,6 +33,3 @@ spec:
       - name: model-storage
         persistentVolumeClaim:
           claimName: model-pvc
-      - name: preprocessing-storage  # New volume for the preprocessing PVC
-        persistentVolumeClaim:
-          claimName: preprocessing-pvc  # Make sure this matches the PVC used by preprocessing
