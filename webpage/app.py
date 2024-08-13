@@ -12,23 +12,36 @@ app_state = {
     "inference_done": False
 }
 
+# Reset state (Optional)
+def reset_state():
+    global app_state
+    app_state = {
+        "data_prep_done": False,
+        "model_training_done": False,
+        "inference_done": False
+    }
+
+# Step 1: Trigger data preparation when the webpage opens
 @app.route('/')
 def home():
-    trigger_data_prep()
+    if not app_state["data_prep_done"]:
+        trigger_data_prep()
     return render_template('index.html')
 
 # Simulate data preparation
 def trigger_data_prep():
     global app_state
-    time.sleep(2)  # Simulate a delay for data preparation
-    app_state["data_prep_done"] = True
-    trigger_model_training()
+    if not app_state["data_prep_done"]:
+        time.sleep(2)  # Simulate a delay for data preparation
+        app_state["data_prep_done"] = True
+        trigger_model_training()
 
 # Step 2: Trigger model training
 def trigger_model_training():
     global app_state
-    time.sleep(2)  # Simulate model training
-    app_state["model_training_done"] = True
+    if not app_state["model_training_done"]:
+        time.sleep(2)  # Simulate model training
+        app_state["model_training_done"] = True
 
 # Step 3: Handle image upload and trigger data processing
 @app.route('/upload', methods=['POST'])
@@ -36,10 +49,13 @@ def upload_image():
     if app_state["model_training_done"]:
         file = request.files['file']
         if file:
-            image = Image.open(file)
-            prepared_image = prepare_image(image)
-            output_image = model_inference(prepared_image)
-            return send_image(output_image)
+            try:
+                image = Image.open(file)
+                prepared_image = prepare_image(image)
+                output_image = model_inference(prepared_image)
+                return send_image(output_image)
+            except Exception as e:
+                return f"Error processing image: {str(e)}", 500
     return "Model training not completed", 400
 
 # Step 4: Display the result after inference
