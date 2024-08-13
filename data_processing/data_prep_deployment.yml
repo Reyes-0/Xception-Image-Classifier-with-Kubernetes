@@ -2,14 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: data-processing-deployment
-  namespace: sleeper-build-namespace
 spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
       maxSurge: 1
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: data-processing
@@ -21,13 +20,13 @@ spec:
     spec:
       containers:
       - name: data-processing-container
-        image: arkkar2204/data-processing-image:v2
+        image: markjesh/data-processing-image:latest
         ports:
         - containerPort: 5000
         volumeMounts:
-        - name: data-processing-pv  
-          mountPath: /container_pvc
+        - name: shared-pv
+          mountPath: "/mnt"
       volumes:
-      - name: data-processing-pv
+      - name: shared-pv
         persistentVolumeClaim:
-          claimName: data-processing-pvc
+          claimName: shared-pvc
