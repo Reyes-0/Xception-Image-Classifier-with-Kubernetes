@@ -8,7 +8,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 import cv2
 import PIL.Image as Image
-from parameters import model_save_dir, prediction_save_dir
+from parameters import model_save_dir, prediction_save_dir, img_dir
 
 # Load the saved model
 model_path = os.path.join(model_save_dir, "xception_model.h5")
@@ -25,7 +25,7 @@ class_names = {0: 'airplane', 1: 'automobile', 2: 'ship', 3: 'truck'}
 # resized_img = np.load(image_path)
 
 # Load the image
-image_file_path = "C:/Users/Shaun Wee/EGT309 Proj/k8s_CV/model_inference/model_infer_docker/ship.jpg"
+image_file_path = f"{img_dir}/ship.jpg"
 img = Image.open(image_file_path).resize((71, 71))
 img_array = np.array(img) / 255.0
 img_array = img_array.reshape((1, 71, 71, 3))
