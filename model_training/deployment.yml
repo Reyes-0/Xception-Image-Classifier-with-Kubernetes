@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: model-training
-        image: model_training_image:latest
+        image: markjesh/model_training_image:latest
         volumeMounts:
         - mountPath: "/app/saved_model"
           name: model-storage
