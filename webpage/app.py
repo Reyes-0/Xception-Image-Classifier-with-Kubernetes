@@ -67,13 +67,13 @@ def send_image(image):
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
-# Data preparation function
+# Data preparation function (dummy code)
 def prepare_image(image):
     image = ImageOps.grayscale(image)
     image = image.resize((224, 224))
     return image
 
-# Model inference function (dummy)
+# Model inference function (dummy code)
 def model_inference(image):
     time.sleep(2)  # Simulate inference time
     return ImageOps.invert(image)
