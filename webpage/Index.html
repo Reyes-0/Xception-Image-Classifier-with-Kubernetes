@@ -3,51 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Processing Webpage</title>
+    <title>File Upload</title>
     
     <!-- Internal CSS -->
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #1d2d3b;
             margin: 0;
             padding: 0;
+            color: white;
         }
 
         .container {
             max-width: 600px;
             margin: 50px auto;
             padding: 20px;
-            background-color: #fff;
+            background-color: #2c3e50;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            border-radius: 10px;
         }
 
         h1 {
             margin-bottom: 20px;
-            color: #333;
+            color: #ecf0f1;
         }
 
         form {
             margin-bottom: 20px;
+            background-color: #34495e;
+            padding: 20px;
+            border-radius: 10px;
         }
 
         input[type="file"] {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
         }
 
         input[type="submit"] {
             padding: 10px 20px;
-            background-color: #007BFF;
+            background-color: #e74c3c;
             border: none;
             color: white;
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
+            margin-top: 10px;
         }
 
         input[type="submit"]:hover {
-            background-color: #0056b3;
+            background-color: #c0392b;
         }
 
         .hidden {
@@ -60,58 +69,48 @@
             border: 1px solid #ddd;
             padding: 5px;
             background-color: #fff;
+            border-radius: 10px;
         }
 
         #loading {
             font-size: 18px;
-            color: #007BFF;
+            color: #e74c3c;
             margin-top: 20px;
+        }
+
+        #prediction {
+            font-size: 18px;
+            color: #ecf0f1;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Image Processing Application</h1>
-        
-        <!-- Step 2: Display upload form only after model training is done -->
-        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data" style="display:none;">
+        <h1>Custom File Upload</h1>
+        <p>In this example, submit a valid image file.</p>
 
+        <!-- Upload form -->
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
             <input type="file" name="file" id="fileInput" accept="image/*" required>
-            <input type="submit" value="Upload Image">
+            <input type="submit" value="Submit!">
         </form>
-        
+
         <div id="loading" class="hidden">Processing image, please wait...</div>
         <div id="result" class="hidden">
             <h2>Processed Image:</h2>
             <img id="outputImage" src="" alt="Processed Image">
+            <div id="prediction">Predicted Outcome: This is your prediction</div>
         </div>
     </div>
 
     <!-- Internal JavaScript -->
     <script>
-        function checkStatus() {
-            fetch('/status')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.model_training_done) {
-                        document.getElementById('uploadForm').style.display = 'block';
-                    }
-                    if (data.inference_done) {
-                        document.getElementById('loading').classList.add('hidden');
-                    }
-                });
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Form submission handling
             const uploadForm = document.getElementById('uploadForm');
             const loadingElement = document.getElementById('loading');
             const resultElement = document.getElementById('result');
             const outputImage = document.getElementById('outputImage');
-
-            uploadForm.onsubmit = function() {
-                loadingElement.classList.remove('hidden');
-            };
 
             uploadForm.addEventListener('submit', function(event) {
                 event.preventDefault(); // Prevent the default form submission
@@ -120,6 +119,9 @@
                 const request = new XMLHttpRequest();
                 request.open('POST', this.action, true); // Prepare the request
                 request.responseType = 'blob'; // Expect a blob response (image)
+
+                loadingElement.classList.remove('hidden');
+                resultElement.classList.add('hidden');
 
                 // Handle the request response
                 request.onload = function() {
@@ -143,9 +145,6 @@
                 request.send(formData); // Send the form data
             });
         });
-
-        // Poll the status every second
-        setInterval(checkStatus, 1000);
     </script>
 </body>
 </html>
