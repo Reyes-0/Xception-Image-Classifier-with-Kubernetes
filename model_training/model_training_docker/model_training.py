@@ -10,10 +10,10 @@ from tensorflow.keras.applications import Xception
 load_dotenv('config.env')
 
 # Paths to preprocessed data
-train_data_path = os.getenv('TRAIN_DATA_PATH', '/data/preprocessed/train_data.npy')
-train_labels_path = os.getenv('TRAIN_LABELS_PATH', '/data/preprocessed/train_labels.npy')
-validation_data_path = os.getenv('VALIDATION_DATA_PATH', '/data/preprocessed/validation_data.npy')
-validation_labels_path = os.getenv('VALIDATION_LABELS_PATH', '/data/preprocessed/validation_labels.npy')
+train_data_path = os.getenv('TRAIN_DATA_PATH', 'train_data.npy')
+train_labels_path = os.getenv('TRAIN_LABELS_PATH', 'train_labels.npy')
+validation_data_path = os.getenv('VALIDATION_DATA_PATH', 'validation_data.npy')
+validation_labels_path = os.getenv('VALIDATION_LABELS_PATH', 'validation_labels.npy')
 model_save_dir = os.getenv('MODEL_SAVE_DIR', '/data/saved_models')
 
 # Load preprocessed data and labels

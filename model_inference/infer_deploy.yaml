@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-inference-deployment
+  namespace: my-application-namespace  # Ensure other pods use this
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: 2
+  selector:
+    matchLabels:
+      app: model-inference
+  template:
+    metadata:
+      labels:
+        app: model-inference
+    spec:
+      containers:
+      - name: model-inference
+        image: shaunwee/model_inference:latest
+        volumeMounts:
+        - mountPath: "/app/models"
+          name: model-storage
+        - mountPath: "/app/preprocessed"  # Mount for the preprocessing PVC
+          name: preprocessing-storage     # Name referencing the preprocessing PVC
+        ports:
+        - containerPort: 5000
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-pvc
+      - name: preprocessing-storage  # New volume for the preprocessing PVC
+        persistentVolumeClaim:
+          claimName: preprocessing-pvc  # Make sure this matches the PVC used by preprocessing
