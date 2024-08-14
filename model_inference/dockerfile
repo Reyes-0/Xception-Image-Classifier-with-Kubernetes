@@ -1,0 +1,26 @@
+#specify your base image to be python3.8
+FROM python:3.8
+
+# set working directory
+WORKDIR /app
+
+# copy all the files to the container
+COPY dockerfile /app/
+COPY parameters.py /app/
+COPY model_inference.py /app/
+COPY requirements.txt /app/
+COPY infer_deploy.yaml /app/
+COPY inference_svc.yaml /app/
+COPY ship.jpg /app/
+
+# install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install system dependencies required by OpenCV
+RUN apt-get update && apt-get install -y libgl1
+
+# expose flask app on port 5000
+EXPOSE 5000
+
+# run the command
+CMD ["python", "model_inference.py"]

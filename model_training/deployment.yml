@@ -23,8 +23,6 @@ spec:
         volumeMounts:
         - mountPath: "/mnt"
           name: shared-pv
-        # - mountPath: "/app/models"
-        #   name: model-storage
       volumes:
       - name: shared-pv
         persistentVolumeClaim:
