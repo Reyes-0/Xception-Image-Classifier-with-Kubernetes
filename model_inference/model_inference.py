@@ -42,10 +42,13 @@ if not os.path.exists(prediction_save_dir):
     os.makedirs(prediction_save_dir)  # Create the directory
 
 # Save the predicted class to a file
-prediction_file_path = os.path.join(prediction_save_dir, "predicted_class.txt")
-with open(prediction_file_path, "w") as f:
-    f.write(predicted_class_name)  # This writes the predicted class name to the file
+# prediction_file_path = os.path.join(prediction_save_dir, "predicted_class.npy")
+# with open(prediction_file_path, "w") as f:
+#     f.write(predicted_class_name)  # This writes the predicted class name to the file
 
-# Save the image
-saved_image_path = os.path.join(prediction_save_dir, "predicted_image.jpg")
-img.save(saved_image_path)
+# Convert the string to a NumPy array
+predicted_class_array = np.array([predicted_class_name])
+
+# Save the array to a .npy file
+prediction_file_path = os.path.join(prediction_save_dir, "predicted_class.npy")
+np.save(prediction_file_path, predicted_class_array)
