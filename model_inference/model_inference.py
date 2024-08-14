@@ -4,7 +4,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 import cv2
 import PIL.Image as Image
-from parameters import model_save_dir, prediction_save_dir, img_dir
+from parameters import model_save_dir, prediction_save_dir, image_directory
 
 # Load the saved model
 model_path = os.path.join(model_save_dir, "xception_model.h5")
@@ -20,10 +20,13 @@ class_names = {0: 'airplane', 1: 'automobile', 2: 'ship', 3: 'truck'}
 # img_array = img_array.reshape((1, 71, 71, 3))
 # resized_img = np.load(image_path)
 
-# Load the image
-image_file_path = f"{img_dir}/ship.jpg"
-img = Image.open(image_file_path).resize((71, 71))
-img_array = np.array(img) / 255.0
+uploaded_image_path = os.path.join(image_directory, 'saved_file_path.npy')
+
+image_path = np.load(uploaded_image_path)
+img = cv2.imread(image_path)
+resized_img = cv2.resize(img, (71, 71))
+
+img_array = np.array(resized_img) / 255.0
 img_array = img_array.reshape((1, 71, 71, 3))
 
 # Make predictions
