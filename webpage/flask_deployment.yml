@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-deployment
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      chapter: flask
+  template:
+    metadata:
+      labels:
+        app: flask-app
+        chapter: flask
+    spec:
+      containers:
+      - name: flask-app
+        image: markjesh/index2:latest
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: shared-pv
+          mountPath: "/mnt"  # Mount the PVC for both uploaded and processed images
+      volumes:
+      - name: shared-pv
+        persistentVolumeClaim:
+          claimName: shared-pvc  # Single PVC for both uploaded and processed images
+
+---
+
+# Flask app service
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app-service
+  labels:
+    chapter: flask
+spec:
+  type: NodePort  
+  ports:
+  - protocol: TCP
+    port: 5000  
+    targetPort: 5000  
+    nodePort: 30005
+  selector:
+    chapter: flask

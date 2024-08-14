@@ -1,87 +1,63 @@
-from flask import Flask, render_template, request, send_file, jsonify
-from PIL import Image, ImageOps
-import io
-import time  # Simulate processing time
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+import os
+import numpy as np
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = '/mnt/image_uploads'
+app.config['PREDICTED_PATH'] = '/mnt/predictions/predicted_class.npy'
+# app.config['UPLOAD_FOLDER'] = 'image_uploads'
+# app.config['PREDICTED_PATH'] = 'predictions'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max size
 
-# Global state to control the flow
-app_state = {
-    "data_prep_done": False,
-    "model_training_done": False,
-    "inference_done": False
-}
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
-# Reset state (Optional)
-def reset_state():
-    global app_state
-    app_state = {
-        "data_prep_done": False,
-        "model_training_done": False,
-        "inference_done": False
-    }
+if not os.path.exists(app.config['PREDICTED_PATH']):
+    os.makedirs(app.config['PREDICTED_PATH'])
 
-# Step 1: Trigger data preparation when the webpage opens
 @app.route('/')
 def home():
-    if not app_state["data_prep_done"]:
-        trigger_data_prep()
-    return render_template('index.html')
+    return render_template('home.html')
 
-# Simulate data preparation
-def trigger_data_prep():
-    global app_state
-    if not app_state["data_prep_done"]:
-        time.sleep(2)  # Simulate a delay for data preparation
-        app_state["data_prep_done"] = True
-        trigger_model_training()
-
-# Step 2: Trigger model training
-def trigger_model_training():
-    global app_state
-    if not app_state["model_training_done"]:
-        time.sleep(2)  # Simulate model training
-        app_state["model_training_done"] = True
-
-# Step 3: Handle image upload and trigger data processing
 @app.route('/upload', methods=['POST'])
-def upload_image():
-    if app_state["model_training_done"]:
-        file = request.files['file']
-        if file:
-            try:
-                image = Image.open(file)
-                prepared_image = prepare_image(image)
-                output_image = model_inference(prepared_image)
-                return send_image(output_image)
-            except Exception as e:
-                return f"Error processing image: {str(e)}", 500
-    return "Model training not completed", 400
+def upload_file():
+    if 'file' not in request.files:
+        return redirect(request.url)
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return redirect(request.url)
+    
+    if file:
+        # Extract the file extension and save the file as 'uploaded_raw_image.<extension>'
+        file_extension = os.path.splitext(file.filename)[1]
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], f'uploaded_raw_image{file_extension}')
+        file.save(file_path)
+        
+        # Save the file path to the PREDICTED_PATH folder
+        predicted_class_labels_path = os.path.join(app.config['UPLOAD_FOLDER'], 'saved_file_path.npy')
+        np.save(predicted_class_labels_path, file_path)
+        
+        return redirect(url_for('display_image', extension=file_extension))
 
-# Step 4: Display the result after inference
-def send_image(image):
-    global app_state
-    app_state["inference_done"] = True
-    img_io = io.BytesIO()
-    image.save(img_io, 'PNG')
-    img_io.seek(0)
-    return send_file(img_io, mimetype='image/png')
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-# Data preparation function
-def prepare_image(image):
-    image = ImageOps.grayscale(image)
-    image = image.resize((224, 224))
-    return image
+@app.route('/display')
+def display_image():
+    file_extension = request.args.get('extension', '.jpg')
+    filename = f'uploaded_raw_image{file_extension}'
+    file_url = url_for('uploaded_file', filename=filename)
+    
+    # Load the predicted class label
+    predicted_class_labels_path = os.path.join(app.config['PREDICTED_PATH'], 'predicted_class.npy')
 
-# Model inference function (dummy)
-def model_inference(image):
-    time.sleep(2)  # Simulate inference time
-    return ImageOps.invert(image)
-
-# API to check the state of the app
-@app.route('/status')
-def check_status():
-    return jsonify(app_state)
+    predicted_class_label = np.load(predicted_class_labels_path)
+    
+    return render_template('display.html', filename='uploaded_raw_image.jpg', file_url=file_url, predicted_class_label=predicted_class_label)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
