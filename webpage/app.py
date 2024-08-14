@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 import os
 import numpy as np
+import time
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/mnt/image_uploads'
@@ -51,6 +52,8 @@ def display_image():
     file_extension = request.args.get('extension', '.jpg')
     filename = f'uploaded_raw_image{file_extension}'
     file_url = url_for('uploaded_file', filename=filename)
+
+    time.sleep(60)
     
     # Load the predicted class label
     predicted_class_labels_path = os.path.join(app.config['PREDICTED_PATH'], 'predicted_class.npy')
