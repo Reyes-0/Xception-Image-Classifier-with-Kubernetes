@@ -20,10 +20,10 @@ class_names = {0: 'airplane', 1: 'automobile', 2: 'ship', 3: 'truck'}
 # img_array = img_array.reshape((1, 71, 71, 3))
 # resized_img = np.load(image_path)
 
-uploaded_image_path = os.path.join(image_directory, 'saved_file_path.npy')
+uploaded_image_path = os.path.join(image_directory, 'saved_file_path.txt')
 
-image_path_np = np.load(uploaded_image_path)
-image_path_str = image_path_np.astype(str)[0]  # or file_path_str = file_path_array.tostring().decode('utf-8')
+with open(uploaded_image_path, 'r') as f:
+    image_path_str = f.read()
 img = cv2.imread(image_path_str)
 resized_img = cv2.resize(img, (71, 71))
 
