@@ -5,7 +5,7 @@ import time
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/mnt/image_uploads'
-app.config['PREDICTED_PATH'] = '/mnt/predictions/predicted_class.npy'
+app.config['PREDICTED_PATH'] = '/mnt/predictions'
 # app.config['UPLOAD_FOLDER'] = 'image_uploads'
 # app.config['PREDICTED_PATH'] = 'predictions'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max size

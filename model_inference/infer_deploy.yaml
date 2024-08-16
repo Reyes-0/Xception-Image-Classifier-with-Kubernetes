@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: model-inference
-        image: arkkar2204/inference:v2
+        image: markjesh/inference:v2
         volumeMounts:
         - mountPath: "/mnt"
           name: shared-pv
