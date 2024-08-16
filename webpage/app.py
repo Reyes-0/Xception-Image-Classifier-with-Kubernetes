@@ -38,8 +38,22 @@ def upload_file():
         file.save(file_path)
         
         # Save the file path to the PREDICTED_PATH folder
-        predicted_class_labels_path = os.path.join(app.config['UPLOAD_FOLDER'], 'saved_file_path.npy')
-        np.save(predicted_class_labels_path, file_path)
+        predicted_class_labels_path = os.path.join(app.config['UPLOAD_FOLDER'], 'saved_file_path.txt')
+        with open(predicted_class_labels_path, 'w') as f:
+            f.write(file_path)
+        
+        predicted_class_labels_path = os.path.join(app.config['PREDICTED_PATH'], 'predicted_class.npy')
+        while True:
+            try:
+                predicted_class_label = np.load(predicted_class_labels_path)
+                print('Predicted class is found!')
+                break
+            except FileNotFoundError:
+                print("Predicted class label file not found. Waiting...")
+                time.sleep(1)
+            except Exception as e:
+                print(f"Error loading predicted class label file: {e}")
+                time.sleep(1)
         
         return redirect(url_for('display_image', extension=file_extension))
 
@@ -52,8 +66,6 @@ def display_image():
     file_extension = request.args.get('extension', '.jpg')
     filename = f'uploaded_raw_image{file_extension}'
     file_url = url_for('uploaded_file', filename=filename)
-
-    time.sleep(60)
     
     # Load the predicted class label
     predicted_class_labels_path = os.path.join(app.config['PREDICTED_PATH'], 'predicted_class.npy')
